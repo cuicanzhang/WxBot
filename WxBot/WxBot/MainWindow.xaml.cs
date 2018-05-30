@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -131,7 +132,70 @@ namespace WxBot
                         sync_flag = wxs.WxSyncCheck();  //同步检查
                         var retcode = sync_flag.ToString().Split(new string[] { "\"" }, StringSplitOptions.None)[1];
                         var selector = sync_flag.ToString().Split(new string[] { "\"" }, StringSplitOptions.None)[3];
+                        if (retcode == "1100")
+                        {
+                            MessageBox.Show("你在手机上登出了微信，债见");
+                            break;
+                        }
+                        if (retcode == "1101")
+                        {
+                            MessageBox.Show("你在其他地方登录了 WEB 版微信，债见");
+                            break;
+                        }
+                        else if (retcode == "0")
+                        {
+                            if (selector == "2")
+                            {
+                                sync_result = wxs.WxSync();  //进行同步
+                                if (sync_result != null)
+                                {
+                                    if (sync_result["AddMsgCount"] != null && sync_result["AddMsgCount"].ToString() != "0")
+                                    {
+                                        foreach (JObject m in sync_result["AddMsgList"])
+                                        {
+                                            string from = m["FromUserName"].ToString();
+                                            string to = m["ToUserName"].ToString();
+                                            string content = m["Content"].ToString();
+                                            string MsgId = m["MsgId"].ToString();
+                                            string type = m["MsgType"].ToString();//语音视频标识
+                                            if (type == "1")
+                                            {
+                                                Dispatcher.BeginInvoke(((Action)delegate ()
+                                                {
+                                                    //wxs.SendMsg(content, from, to, 1, uin, sid);
+                                                    //MessageBox.Show(content);
+                                                    chatText.AppendText("[" + type + "]" + from + "->" + to + " : " + content + "\n");
 
+                                                    if (forward == true)
+                                                    {
+                                                        if (from.Contains("@@"))
+                                                        {
+                                                            var aa = sCB.SelectedValue.ToString();
+                                                            if (from == sCB.SelectedValue.ToString())
+                                                            {
+                                                                string[] sArray = Regex.Split(content, ":<br/>", RegexOptions.IgnoreCase);
+                                                                if (sArray[0] == smCB.SelectedValue.ToString())
+                                                                    foreach (var g in dGroup)
+                                                                    {
+                                                                        var bb = forwardUser;
+                                                                        wxs.SendMsg(sArray[1], forwardUser, g, int.Parse(type), uin, sid);
+                                                                    }
+                                                            }
+                                                        }
+                                                        //chatText.AppendText("[" + msg.Type + "]" + wxc.GetNickName(from) + "->" + wxc.GetNickName(to) + " : " + content + "\n");
+                                                        chatText.PageDown();
+                                                        //chatText.AppendText("\nmsg:                 "+sync_result["AddMsgList"].ToString());
+                                                        //debugTextBox.AppendText(m.ToString());
+                                                    }
+
+
+                                                }));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             
@@ -155,7 +219,7 @@ namespace WxBot
 
         private void smCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            forwardBtn.IsEnabled = true;
         }
         private void dGroup_Click(object sender, RoutedEventArgs e)
         {
@@ -179,6 +243,28 @@ namespace WxBot
 
         private void dLV_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (dGroup.Count > 0)
+            {
+                if (forward == false)
+                {
+                    forward = true;
+                    forwardBtn.Content = "关闭";
+                }
+                else
+                {
+                    forward = false;
+                    forwardBtn.Content = "启用";
+                }
+            }
+            else
+            {
+                MessageBox.Show("选择至少一个目标群后可开启");
+            }
 
         }
     }

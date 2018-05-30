@@ -30,6 +30,9 @@
         <Label Content="源主播" HorizontalAlignment="Left" Margin="10,99,0,0" VerticalAlignment="Top" Height="26" Width="46"/>
         <Label Content="目标群" HorizontalAlignment="Left" Margin="10,134,0,0" VerticalAlignment="Top" Height="26" Width="46"/>
         <Button x:Name="forwardBtn" IsEnabled="False" Content="启用" HorizontalAlignment="Left" Margin="10,185,0,0" VerticalAlignment="Top" Width="50" Height="50" Click="Button_Click_1"/>
+        <RichTextBox Name="chatText" HorizontalAlignment="Left" Height="134" Margin="10,275,0,0" VerticalAlignment="Top" Width="772">
+            <FlowDocument/>
+        </RichTextBox>
 
     </Grid>
 </Window>

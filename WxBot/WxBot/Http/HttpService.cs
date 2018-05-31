@@ -100,7 +100,7 @@ namespace WxBot.Http
             }
             catch (Exception ex)
             {
-                MessageBox.Show("SendGetRequest" + ex.Message);
+                MessageBox.Show("SendGetRequest Cook" + ex.Message);
                 return null;
             }
         }

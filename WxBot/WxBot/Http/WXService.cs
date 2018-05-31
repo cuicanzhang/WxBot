@@ -49,8 +49,7 @@ namespace WxBot.Http
         {
             try
             {
-                string url = BaseUrl + Constant._geticon_url + username;
-                byte[] bytes = HttpService.SendGetRequest(url, uin);
+                byte[] bytes = HttpService.SendGetRequest(BaseUrl + Constant._geticon_url + username, uin);
                 return new MemoryStream(bytes);
             }
 

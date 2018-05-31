@@ -8,7 +8,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Image Name="headImage" HorizontalAlignment="Left" Height="60" Margin="10,10,0,0" VerticalAlignment="Top" Width="60"/>
-        <ListView x:Name="dLV"  HorizontalAlignment="Left" Height="134" Margin="70,136,0,0" VerticalAlignment="Top" Width="300" SelectionChanged="dLV_SelectionChanged">
+        <ListView x:Name="dLV"  HorizontalAlignment="Left" Height="134" Margin="74,140,0,0" VerticalAlignment="Top" Width="300" SelectionChanged="dLV_SelectionChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="UserName" Width="0" DisplayMemberBinding="{Binding UserName}"/>
@@ -24,15 +24,17 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <ComboBox Name="sCB" HorizontalAlignment="Left" Margin="70,66,0,0" VerticalAlignment="Top" Width="300" SelectionChanged="sCB_SelectionChanged" Height="22"/>
-        <ComboBox Name="smCB" HorizontalAlignment="Left" Margin="70,99,0,0" VerticalAlignment="Top" Width="300" SelectionChanged="smCB_SelectionChanged" Height="22"/>
-        <Label Content="来源群" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Height="26" Width="46"/>
-        <Label Content="源主播" HorizontalAlignment="Left" Margin="10,99,0,0" VerticalAlignment="Top" Height="26" Width="46"/>
-        <Label Content="目标群" HorizontalAlignment="Left" Margin="10,134,0,0" VerticalAlignment="Top" Height="26" Width="46"/>
-        <Button x:Name="forwardBtn" IsEnabled="False" Content="启用" HorizontalAlignment="Left" Margin="10,185,0,0" VerticalAlignment="Top" Width="50" Height="50" Click="Button_Click_1"/>
-        <RichTextBox Name="chatText" HorizontalAlignment="Left" Height="134" Margin="10,275,0,0" VerticalAlignment="Top" Width="772">
+        <ComboBox Name="sCB" HorizontalAlignment="Left" Margin="74,72,0,0" VerticalAlignment="Top" Width="300" SelectionChanged="sCB_SelectionChanged" Height="22"/>
+        <ComboBox Name="smCB" HorizontalAlignment="Left" Margin="74,105,0,0" VerticalAlignment="Top" Width="300" SelectionChanged="smCB_SelectionChanged" Height="22"/>
+        <Label Content="来源群" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Height="26" Width="46"/>
+        <Label Content="源主播" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Height="26" Width="46"/>
+        <Label Content="目标群" HorizontalAlignment="Left" Margin="10,142,0,0" VerticalAlignment="Top" Height="26" Width="46"/>
+        <Button x:Name="forwardBtn" IsEnabled="False" Content="启用" HorizontalAlignment="Left" Margin="10,193,0,0" VerticalAlignment="Top" Width="50" Height="50" Click="Button_Click_1"/>
+        <RichTextBox Name="chatText" HorizontalAlignment="Left" Height="134" Margin="10,281,0,0" VerticalAlignment="Top" Width="772">
             <FlowDocument/>
         </RichTextBox>
+        <Label Name="supLB" Content="" HorizontalAlignment="Left" Margin="95,10,0,0" VerticalAlignment="Top" Width="279" Height="51" FontWeight="Bold"/>
+        <Label Name="sleepLB" Content="Label" HorizontalAlignment="Left" Margin="379,10,0,0" VerticalAlignment="Top" Width="226" Height="51"/>
 
     </Grid>
 </Window>

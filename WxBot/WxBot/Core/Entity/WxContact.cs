@@ -23,7 +23,7 @@ namespace WxBot.Core.Entity
         public WxContact(string uin)
         {
             _uin = uin;
-            var entity = LoginCore.GetPassTicket(wxs.Uin);
+            var entity = LoginCore.GetPassTicket(_uin);
             if (entity != null)
             {
                 wxs.Sid = entity.WxSid;

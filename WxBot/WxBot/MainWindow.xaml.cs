@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,6 +35,10 @@ namespace WxBot
         public MainWindow()
         {
             InitializeComponent();
+            supLB.Content = "启 动 . . .";
+            sCB.IsEnabled = false;
+            smCB.IsEnabled = false;
+            dLV.IsEnabled = false;
             LoginWindow loginWindow = new LoginWindow();
             loginWindow.ShowDialog();
             if (loginWindow.DialogResult != Convert.ToBoolean(1))
@@ -48,6 +53,7 @@ namespace WxBot
         {
             ((Action)(delegate ()
             {
+                
                 LoginCore.InitCookie(uin);
                 string sid = LoginCore.GetPassTicket(uin).WxSid;
                 string host = LoginCore.GetPassTicket(uin).WxHost;
@@ -64,6 +70,11 @@ namespace WxBot
                 var partUsers = new List<WXUser>();
                 if (init_result != null)
                 {
+                    this.Dispatcher.BeginInvoke(((Action)delegate ()  //等待结束
+                    {
+                        supLB.Content = "加载个人信息...";
+
+                    }));
                     var _me = new WXUser
                     {
                         uin = wxs.Uin,
@@ -78,10 +89,16 @@ namespace WxBot
                         Sex = init_result["User"]["Sex"].ToString(),
                         Signature = init_result["User"]["Signature"].ToString(),
                     };
+                    forwardUser = _me.UserName;
                     partUsers.Add(_me);
                     this.Dispatcher.Invoke((Action)(delegate ()  //等待结束
                     {
                         headImage.Source = BitmapFrame.Create(wxs.GetIcon(_me.UserName, uin), BitmapCreateOptions.None, BitmapCacheOption.Default);
+                    }));
+                    this.Dispatcher.BeginInvoke(((Action)delegate ()  //等待结束
+                    {
+                        supLB.Content = "加载最近联系人...";
+
                     }));
                     foreach (JObject contact in init_result["ContactList"])  //部分好友名单
                     {
@@ -108,7 +125,11 @@ namespace WxBot
                     }
                     //保存最新key
                     LoginCore.SyncKey(uin, _syncKey);
+                    this.Dispatcher.BeginInvoke(((Action)delegate ()  //等待结束
+                    {
+                        supLB.Content = "初始化联系人...";
 
+                    }));
                     WxContact _contact = new WxContact(uin);  //记住此处不适合再开线程
                     _contact.InitContact(partUsers); //初始联系人
 
@@ -124,14 +145,25 @@ namespace WxBot
                         sCB.SelectedValuePath = "Key";
                         smCB.DisplayMemberPath = "Value";
                         smCB.SelectedValuePath = "Key";
+                        supLB.Content = "进入监听模式...";
+                        sCB.IsEnabled = true;
+                        smCB.IsEnabled = true;
+                        dLV.IsEnabled = true;
                     }));
                     string sync_flag = null;
                     JObject sync_result;
+
                     while (true)
                     {
+                        DateTime lastCheckTs = DateTime.Now;
                         sync_flag = wxs.WxSyncCheck();  //同步检查
                         var retcode = sync_flag.ToString().Split(new string[] { "\"" }, StringSplitOptions.None)[1];
                         var selector = sync_flag.ToString().Split(new string[] { "\"" }, StringSplitOptions.None)[3];
+                        this.Dispatcher.BeginInvoke((Action)(delegate ()
+                        {
+                            supLB.Content = "{retcode:" + retcode + " selector:" + selector + "}";
+
+                        }));
                         if (retcode == "1100")
                         {
                             MessageBox.Show("你在手机上登出了微信，债见");
@@ -164,8 +196,8 @@ namespace WxBot
                                                 {
                                                     //wxs.SendMsg(content, from, to, 1, uin, sid);
                                                     //MessageBox.Show(content);
-                                                    chatText.AppendText("[" + type + "]" + from + "->" + to + " : " + content + "\n");
-
+                                                    //chatText.AppendText("[" + type + "]" + from + "->" + to + " : " + content + "\n");
+                                                    chatText.AppendText("[" + type + "]:" +content + "\n");
                                                     if (forward == true)
                                                     {
                                                         if (from.Contains("@@"))
@@ -191,11 +223,104 @@ namespace WxBot
 
                                                 }));
                                             }
+                                            else if (type == "3")//图片
+                                            {
+                                                string sFilePath = Environment.CurrentDirectory + "\\IMG";
+                                                Dispatcher.Invoke(((Action)delegate ()
+                                                {
+                                                        if (forward == true)
+                                                        {
+                                                            if (from.Contains("@@"))
+                                                            {
+
+                                                                if (from == sCB.SelectedValue.ToString())
+                                                                {
+                                                                    string[] sArray = Regex.Split(content, ":<br/>", RegexOptions.IgnoreCase);
+                                                                    if (sArray[0] == smCB.SelectedValue.ToString())
+                                                                        foreach (var g in dGroup)
+                                                                        {
+                                                                            //wxs.SendMsgImg(ClientMediaId, forwardUser, g, int.Parse(type), uin, sid);
+                                                                            wxs.SendMsgImg("", sArray[1], forwardUser, g, int.Parse(type), uin, sid);
+                                                                        }
+                                                                }
+                                                            }
+                                                            //chatText.AppendText("[" + msg.Type + "]" + wxc.GetNickName(from) + "->" + wxc.GetNickName(to) + " : " + content + "\n");
+                                                            chatText.PageDown();
+                                                            //chatText.AppendText("\nmsg:                 "+sync_result["AddMsgList"].ToString());
+                                                            //debugTextBox.AppendText(m.ToString());
+                                                        }                                                    
+                                                }));
+                                            }
+                                            else if (type == "47")//动态表情
+                                            {
+                                                Dispatcher.BeginInvoke(((Action)delegate ()
+                                                {
+                                                    if (forward == true)
+                                                    {
+                                                        if (from.Contains("@@"))
+                                                        {
+                                                            //chatText.AppendText("[" + type + "]" + from + "->" + to + " : " + content + "\n");
+
+                                                            var aa = sCB.SelectedValue.ToString();
+                                                            if (from == sCB.SelectedValue.ToString())
+                                                            {
+                                                                string[] sArray = Regex.Split(content, ":<br/>", RegexOptions.IgnoreCase);
+                                                                if (sArray[0] == smCB.SelectedValue.ToString())
+                                                                    foreach (var g in dGroup)
+                                                                    {
+                                                                        Regex reg = new Regex(@"md5=.(.*).\slen");
+                                                                        Match match = reg.Match(sArray[1]);
+                                                                        var aaa = match.Groups[1].Value;
+                                                                        var bb = forwardUser;
+                                                                        wxs.SendEmoticon(match.Groups[1].Value, forwardUser, g, int.Parse(type), uin, sid);
+                                                                    }
+                                                            }
+                                                        }
+                                                    }
+                                                }));
+                                            }
+                                            else
+                                            {
+                                                this.Dispatcher.BeginInvoke((Action)(delegate ()
+                                                {
+                                                    chatText.AppendText(content);
+
+                                                }));
+                                            }
                                         }
                                     }
                                 }
                             }
+                            else if (selector == "6")
+                            {
+                                sync_result = wxs.WxSync();
+                                continue;
+                            }
+                            else if (selector == "7")
+                            {
+                                sync_result = wxs.WxSync();
+                                continue;
+                            }
+                            else if (selector == "0")
+                            {
+                                Thread.Sleep(1000);
+                            }
                         }
+                        if ((DateTime.Now- lastCheckTs).Seconds<=25)
+                        {
+                            var sleep = (DateTime.Now - lastCheckTs).Seconds;
+                            Thread.Sleep(sleep);
+                            this.Dispatcher.BeginInvoke((Action)(delegate ()
+                            {
+                                sleepLB.Content = sleep;
+
+                            }));
+                        }
+                        this.Dispatcher.BeginInvoke((Action)(delegate ()
+                        {
+                            supLB.Content = "";
+
+                        }));
                     }
                 }
             
@@ -208,9 +333,28 @@ namespace WxBot
         {
             this.Dispatcher.Invoke((Action)(delegate ()  //等待结束
             {
+                dGroup.Clear();
                 ObservableCollection<WxGroup> dGroups = new ObservableCollection<WxGroup>();
-                Dictionary<string, string> dGroupsMembers = new Dictionary<string, string>();
+                Dictionary<string, string> GroupsMembers = new Dictionary<string, string>();
+                WxContact wxc = new WxContact(uin);
+                foreach (var gm in wxc.GetGroupMemberNames(sCB.SelectedValue.ToString()).MemberUserNames)
+                {
+                    GroupsMembers.Add(gm.UserName, gm.NickName);
+                }
+                smCB.ItemsSource = GroupsMembers;
+                //smCB.DisplayMemberPath = "Value";
+                //smCB.SelectedValue = "Key";
 
+                foreach (var g in wxc.GetGroupUserNames())
+                {
+                    if (g != sCB.SelectedValue.ToString())
+                    {
+                        dGroups.Add(new WxGroup { NickName = wxc.GetOnLineGroupMember(g).NickName, UserName = wxc.GetOnLineGroupMember(g).UserName });
+                    }
+
+                    //dGroups.Add(new WxGroup { NickName = g, });
+                }
+                dLV.ItemsSource = dGroups;
 
 
 

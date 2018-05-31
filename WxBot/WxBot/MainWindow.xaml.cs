@@ -157,77 +157,79 @@ namespace WxBot
                     {
                         DateTime lastCheckTs = DateTime.Now;
                         sync_flag = wxs.WxSyncCheck();  //同步检查
-                        var retcode = sync_flag.ToString().Split(new string[] { "\"" }, StringSplitOptions.None)[1];
-                        var selector = sync_flag.ToString().Split(new string[] { "\"" }, StringSplitOptions.None)[3];
-                        this.Dispatcher.BeginInvoke((Action)(delegate ()
+                        if (sync_flag != null)
                         {
-                            supLB.Content = "{retcode:" + retcode + " selector:" + selector + "}";
-
-                        }));
-                        if (retcode == "1100")
-                        {
-                            MessageBox.Show("你在手机上登出了微信，债见");
-                            break;
-                        }
-                        if (retcode == "1101")
-                        {
-                            MessageBox.Show("你在其他地方登录了 WEB 版微信，债见");
-                            break;
-                        }
-                        else if (retcode == "0")
-                        {
-                            if (selector == "2")
+                            var retcode = sync_flag.ToString().Split(new string[] { "\"" }, StringSplitOptions.None)[1];
+                            var selector = sync_flag.ToString().Split(new string[] { "\"" }, StringSplitOptions.None)[3];
+                            this.Dispatcher.BeginInvoke((Action)(delegate ()
                             {
-                                sync_result = wxs.WxSync();  //进行同步
-                                if (sync_result != null)
+                                supLB.Content = "{retcode:" + retcode + " selector:" + selector + "}";
+
+                            }));
+                            if (retcode == "1100")
+                            {
+                                MessageBox.Show("你在手机上登出了微信，债见");
+                                break;
+                            }
+                            if (retcode == "1101")
+                            {
+                                MessageBox.Show("你在其他地方登录了 WEB 版微信，债见");
+                                break;
+                            }
+                            else if (retcode == "0")
+                            {
+                                if (selector == "2")
                                 {
-                                    if (sync_result["AddMsgCount"] != null && sync_result["AddMsgCount"].ToString() != "0")
+                                    sync_result = wxs.WxSync();  //进行同步
+                                    if (sync_result != null)
                                     {
-                                        foreach (JObject m in sync_result["AddMsgList"])
+                                        if (sync_result["AddMsgCount"] != null && sync_result["AddMsgCount"].ToString() != "0")
                                         {
-                                            string from = m["FromUserName"].ToString();
-                                            string to = m["ToUserName"].ToString();
-                                            string content = m["Content"].ToString();
-                                            string MsgId = m["MsgId"].ToString();
-                                            string type = m["MsgType"].ToString();//语音视频标识
-                                            if (type == "1")
+                                            foreach (JObject m in sync_result["AddMsgList"])
                                             {
-                                                Dispatcher.BeginInvoke(((Action)delegate ()
+                                                string from = m["FromUserName"].ToString();
+                                                string to = m["ToUserName"].ToString();
+                                                string content = m["Content"].ToString();
+                                                string MsgId = m["MsgId"].ToString();
+                                                string type = m["MsgType"].ToString();//语音视频标识
+                                                if (type == "1")
                                                 {
-                                                    //wxs.SendMsg(content, from, to, 1, uin, sid);
-                                                    //MessageBox.Show(content);
-                                                    //chatText.AppendText("[" + type + "]" + from + "->" + to + " : " + content + "\n");
-                                                    chatText.AppendText("[" + type + "]:" +content + "\n");
-                                                    if (forward == true)
+                                                    Dispatcher.BeginInvoke(((Action)delegate ()
                                                     {
-                                                        if (from.Contains("@@"))
+                                                        //wxs.SendMsg(content, from, to, 1, uin, sid);
+                                                        //MessageBox.Show(content);
+                                                        //chatText.AppendText("[" + type + "]" + from + "->" + to + " : " + content + "\n");
+                                                        chatText.AppendText("[" + type + "]:" + content + "\n");
+                                                        if (forward == true)
                                                         {
-                                                            var aa = sCB.SelectedValue.ToString();
-                                                            if (from == sCB.SelectedValue.ToString())
+                                                            if (from.Contains("@@"))
                                                             {
-                                                                string[] sArray = Regex.Split(content, ":<br/>", RegexOptions.IgnoreCase);
-                                                                if (sArray[0] == smCB.SelectedValue.ToString())
-                                                                    foreach (var g in dGroup)
-                                                                    {
-                                                                        var bb = forwardUser;
-                                                                        wxs.SendMsg(sArray[1], forwardUser, g, int.Parse(type), uin, sid);
-                                                                    }
+                                                                var aa = sCB.SelectedValue.ToString();
+                                                                if (from == sCB.SelectedValue.ToString())
+                                                                {
+                                                                    string[] sArray = Regex.Split(content, ":<br/>", RegexOptions.IgnoreCase);
+                                                                    if (sArray[0] == smCB.SelectedValue.ToString())
+                                                                        foreach (var g in dGroup)
+                                                                        {
+                                                                            var bb = forwardUser;
+                                                                            wxs.SendMsg(sArray[1], forwardUser, g, int.Parse(type), uin, sid);
+                                                                        }
+                                                                }
                                                             }
+                                                            //chatText.AppendText("[" + msg.Type + "]" + wxc.GetNickName(from) + "->" + wxc.GetNickName(to) + " : " + content + "\n");
+                                                            chatText.PageDown();
+                                                            //chatText.AppendText("\nmsg:                 "+sync_result["AddMsgList"].ToString());
+                                                            //debugTextBox.AppendText(m.ToString());
                                                         }
-                                                        //chatText.AppendText("[" + msg.Type + "]" + wxc.GetNickName(from) + "->" + wxc.GetNickName(to) + " : " + content + "\n");
-                                                        chatText.PageDown();
-                                                        //chatText.AppendText("\nmsg:                 "+sync_result["AddMsgList"].ToString());
-                                                        //debugTextBox.AppendText(m.ToString());
-                                                    }
 
 
-                                                }));
-                                            }
-                                            else if (type == "3")//图片
-                                            {
-                                                string sFilePath = Environment.CurrentDirectory + "\\IMG";
-                                                Dispatcher.Invoke(((Action)delegate ()
+                                                    }));
+                                                }
+                                                else if (type == "3")//图片
                                                 {
+                                                    string sFilePath = Environment.CurrentDirectory + "\\IMG";
+                                                    Dispatcher.Invoke(((Action)delegate ()
+                                                    {
                                                         if (forward == true)
                                                         {
                                                             if (from.Contains("@@"))
@@ -248,87 +250,86 @@ namespace WxBot
                                                             chatText.PageDown();
                                                             //chatText.AppendText("\nmsg:                 "+sync_result["AddMsgList"].ToString());
                                                             //debugTextBox.AppendText(m.ToString());
-                                                        }                                                    
-                                                }));
-                                            }
-                                            else if (type == "47")//动态表情
-                                            {
-                                                Dispatcher.BeginInvoke(((Action)delegate ()
+                                                        }
+                                                    }));
+                                                }
+                                                else if (type == "47")//动态表情
                                                 {
-                                                    if (forward == true)
+                                                    Dispatcher.BeginInvoke(((Action)delegate ()
                                                     {
-                                                        if (from.Contains("@@"))
+                                                        if (forward == true)
                                                         {
-                                                            //chatText.AppendText("[" + type + "]" + from + "->" + to + " : " + content + "\n");
-
-                                                            var aa = sCB.SelectedValue.ToString();
-                                                            if (from == sCB.SelectedValue.ToString())
+                                                            if (from.Contains("@@"))
                                                             {
-                                                                string[] sArray = Regex.Split(content, ":<br/>", RegexOptions.IgnoreCase);
-                                                                if (sArray[0] == smCB.SelectedValue.ToString())
-                                                                    foreach (var g in dGroup)
-                                                                    {
-                                                                        Regex reg = new Regex(@"md5=.(.*).\slen");
-                                                                        Match match = reg.Match(sArray[1]);
-                                                                        var aaa = match.Groups[1].Value;
-                                                                        var bb = forwardUser;
-                                                                        wxs.SendEmoticon(match.Groups[1].Value, forwardUser, g, int.Parse(type), uin, sid);
-                                                                    }
+                                                                //chatText.AppendText("[" + type + "]" + from + "->" + to + " : " + content + "\n");
+
+                                                                var aa = sCB.SelectedValue.ToString();
+                                                                if (from == sCB.SelectedValue.ToString())
+                                                                {
+                                                                    string[] sArray = Regex.Split(content, ":<br/>", RegexOptions.IgnoreCase);
+                                                                    if (sArray[0] == smCB.SelectedValue.ToString())
+                                                                        foreach (var g in dGroup)
+                                                                        {
+                                                                            Regex reg = new Regex(@"md5=.(.*).\slen");
+                                                                            Match match = reg.Match(sArray[1]);
+                                                                            var aaa = match.Groups[1].Value;
+                                                                            var bb = forwardUser;
+                                                                            wxs.SendEmoticon(match.Groups[1].Value, forwardUser, g, int.Parse(type), uin, sid);
+                                                                        }
+                                                                }
                                                             }
                                                         }
-                                                    }
-                                                }));
-                                            }
-                                            else
-                                            {
-                                                this.Dispatcher.BeginInvoke((Action)(delegate ()
+                                                    }));
+                                                }
+                                                else
                                                 {
-                                                    chatText.AppendText(content);
+                                                    this.Dispatcher.BeginInvoke((Action)(delegate ()
+                                                    {
+                                                        chatText.AppendText(content);
 
-                                                }));
+                                                    }));
+                                                }
                                             }
                                         }
                                     }
                                 }
+                                else if (selector == "6")
+                                {
+                                    sync_result = wxs.WxSync();
+                                    continue;
+                                }
+                                else if (selector == "7")
+                                {
+                                    sync_result = wxs.WxSync();
+                                    continue;
+                                }
+                                else if (selector == "0")
+                                {
+                                    Thread.Sleep(1000);
+                                }
                             }
-                            else if (selector == "6")
+                            if ((DateTime.Now - lastCheckTs).Seconds <= 20)
                             {
-                                sync_result = wxs.WxSync();
-                                continue;
+                                var sleep = (DateTime.Now - lastCheckTs).Seconds;
+                                Thread.Sleep(sleep * 1000);
+                                this.Dispatcher.BeginInvoke((Action)(delegate ()
+                                {
+                                    sleepLB.Content = sleep;
+
+                                }));
                             }
-                            else if (selector == "7")
-                            {
-                                sync_result = wxs.WxSync();
-                                continue;
-                            }
-                            else if (selector == "0")
-                            {
-                                Thread.Sleep(1000);
-                            }
-                        }
-                        if ((DateTime.Now- lastCheckTs).Seconds<=25)
-                        {
-                            var sleep = (DateTime.Now - lastCheckTs).Seconds;
-                            Thread.Sleep(sleep*1000);
                             this.Dispatcher.BeginInvoke((Action)(delegate ()
                             {
-                                sleepLB.Content = sleep;
+                                supLB.Content = "";
 
                             }));
+                            sync_flag = null;
                         }
                         else
                         {
-                            this.Dispatcher.BeginInvoke((Action)(delegate ()
-                            {
-                                sleepLB.Content = (DateTime.Now - lastCheckTs).Seconds;
-
-                            }));
+                            continue;
                         }
-                        this.Dispatcher.BeginInvoke((Action)(delegate ()
-                        {
-                            supLB.Content = "";
-
-                        }));
+                        
                     }
                 }
             

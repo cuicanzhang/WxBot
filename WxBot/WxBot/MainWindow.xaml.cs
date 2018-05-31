@@ -309,10 +309,18 @@ namespace WxBot
                         if ((DateTime.Now- lastCheckTs).Seconds<=25)
                         {
                             var sleep = (DateTime.Now - lastCheckTs).Seconds;
-                            Thread.Sleep(sleep);
+                            Thread.Sleep(sleep*1000);
                             this.Dispatcher.BeginInvoke((Action)(delegate ()
                             {
                                 sleepLB.Content = sleep;
+
+                            }));
+                        }
+                        else
+                        {
+                            this.Dispatcher.BeginInvoke((Action)(delegate ()
+                            {
+                                sleepLB.Content = (DateTime.Now - lastCheckTs).Seconds;
 
                             }));
                         }

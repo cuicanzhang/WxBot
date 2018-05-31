@@ -33,12 +33,14 @@ namespace WxBot.Http
                 byte[] bytes = HttpService.SendPostRequest(url, init_json, Uin);
                 string init_str = Encoding.UTF8.GetString(bytes);
                 JObject init_result = JsonConvert.DeserializeObject(init_str) as JObject;
+                
                 return init_result;
             }
             else
             {
                 return null;
             }
+           
         }
         /// <summary>
         /// 获取头像

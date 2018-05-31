@@ -26,9 +26,10 @@ namespace WxBot.Http
 
         public static byte[] SendGetRequest(string url, string uid)
         {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                
                 request.Method = "get";
 
                 if (!string.IsNullOrEmpty(uid))
@@ -67,6 +68,10 @@ namespace WxBot.Http
                 MessageBox.Show("SendGetRequest" + ex.Message);
                 return null;
             }
+            finally
+            {
+                request.Abort();
+            }
         }
 
         /// <summary>
@@ -77,9 +82,10 @@ namespace WxBot.Http
         /// <returns></returns>
         public static byte[] SendGetRequest(string url, ref CookieContainer cookieContainer)
         {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                
                 request.Method = "get";
                 request.CookieContainer = cookieContainer;  //启用cookie               
 
@@ -103,15 +109,21 @@ namespace WxBot.Http
                 MessageBox.Show("SendGetRequest Cook" + ex.Message);
                 return null;
             }
+            finally
+            {
+                request.Abort();
+            }
         }
 
         public static byte[] SendPostRequest(string url, string body, string uid)
         {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
             try
             {
                 byte[] request_body = Encoding.UTF8.GetBytes(body);
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                
                 request.Method = "post";
                 request.ContentLength = request_body.Length;
 
@@ -159,6 +171,10 @@ namespace WxBot.Http
             {
                 MessageBox.Show("SendPostRequest" + ex.Message);
                 return null;
+            }
+            finally
+            {
+                request.Abort();
             }
         }
         public static bool CheckValidationResult(object sender, X509Certificate certificate,

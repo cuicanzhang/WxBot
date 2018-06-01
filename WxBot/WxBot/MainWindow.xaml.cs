@@ -152,11 +152,12 @@ namespace WxBot
                     }));
                     string sync_flag = null;
                     JObject sync_result;
-
+                    sync_flag = wxs.WxSyncCheck();  //同步检查
+                    DateTime lastCheckTs = DateTime.Now;
                     while (true)
                     {
-                        DateTime lastCheckTs = DateTime.Now;
-                        sync_flag = wxs.WxSyncCheck();  //同步检查
+                        
+                        
                         if (sync_flag != null)
                         {
                             var retcode = sync_flag.ToString().Split(new string[] { "\"" }, StringSplitOptions.None)[1];
@@ -178,58 +179,57 @@ namespace WxBot
                             }
                             else if (retcode == "0")
                             {
-                                if (selector == "2" || selector == "3" || selector == "6")
+                                if (selector == "2")
                                 {
                                     sync_result = wxs.WxSync();  //进行同步
+                                    lastCheckTs = DateTime.Now;
                                     if (sync_result != null)
                                     {
                                         handleMsg(sync_result);
                                     }
-                                }
-                                else if (selector == "1" || selector=="4" || selector=="5")
-                                {
-                                    sync_result = wxs.WxSync();
-                                    
-                                }
-                                else if (selector == "7")
-                                {
-                                    sync_result = wxs.WxSync();
+                                    this.Dispatcher.BeginInvoke((Action)(delegate ()
                                     {
-                                        handleMsg(sync_result);
-                                    }
+                                        supLB.Content = "";
+                                    }));
                                 }
                                 else if (selector == "0")
                                 {
-                                    Thread.Sleep(1000);
-                                }
-                                this.Dispatcher.BeginInvoke((Action)(delegate ()
-                                {
-                                    supLB.Content = "";
+                                    this.Dispatcher.BeginInvoke((Action)(delegate ()
+                                    {
+                                        supLB.Content = "";
+                                    }));
 
-                                }));
+                                    Thread.Sleep(500);
+                                }
+                                else
+                                {
+                                    sync_result = wxs.WxSync();  //进行同步
+                                    this.Dispatcher.BeginInvoke((Action)(delegate ()
+                                    {
+                                        chatText.AppendText("\n" + selector + "\n-------" + sync_result.ToString() + "-------\n");
+                                    }));
+                                }
                             }
-                            
                             sync_flag = null;
                         }
 
-                        else
-                        {
-                            continue;
-                        }
-                        if ((DateTime.Now - lastCheckTs).Seconds <= 20)
+                        if ((DateTime.Now - lastCheckTs).Seconds < 25)
                         {
                             var sleep = (DateTime.Now - lastCheckTs).Seconds;
-                            Thread.Sleep(sleep * 1000);
-                            this.Dispatcher.BeginInvoke((Action)(delegate ()
-                            {
-                                sleepLB.Content = sleep;
-
-                            }));
+                            Thread.Sleep(1000);
+                            
+                            sync_flag = wxs.WxSyncCheck();  //同步检查
+                        }
+                        else
+                        {
+                            sync_flag = wxs.WxSyncCheck();
+                            lastCheckTs = DateTime.Now;
+                            
                         }
                         this.Dispatcher.BeginInvoke((Action)(delegate ()
                         {
+                            sleepLB.Content = (DateTime.Now - lastCheckTs).Seconds;
                             supLB.Content = "";
-
                         }));
 
                     }

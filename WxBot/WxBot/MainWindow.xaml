@@ -34,7 +34,7 @@
             <FlowDocument/>
         </RichTextBox>
         <Label Name="supLB" Content="" HorizontalAlignment="Left" Margin="95,10,0,0" VerticalAlignment="Top" Width="279" Height="51" FontWeight="Bold"/>
-        <Label Name="sleepLB" Content="Label" HorizontalAlignment="Left" Margin="379,10,0,0" VerticalAlignment="Top" Width="226" Height="51"/>
+        <Label Name="sleepLB" Content="00" HorizontalAlignment="Left" Margin="70,0,0,0" VerticalAlignment="Top" Width="40" Height="29"/>
 
     </Grid>
 </Window>

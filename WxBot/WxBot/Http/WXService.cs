@@ -203,7 +203,7 @@ namespace WxBot.Http
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="type"></param>
-        public void SendMsg(string msg, string from, string to, int type, string Uin, string Sid)
+        public void SendMsg(string msg, string from, string to, int type)
         {
             string msg_json = "{{" +
             "\"BaseRequest\":{{" +
@@ -244,49 +244,7 @@ namespace WxBot.Http
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="type"></param>
-        public void SendMsgImg1(string msg, string from, string to, int type, string Uin, string Sid)
-        {
-            string msg_json = "{{" +
-            "\"BaseRequest\":{{" +
-                "\"DeviceID\" : \"{0}\"," +
-                "\"Sid\" : \"{1}\"," +
-                "\"Skey\" : \"{2}\"," +
-                "\"Uin\" : \"{3}\"" +
-            "}}," +
-            "\"Msg\" : {{" +
-                "\"ClientMsgId\" : {4}," +
-                "\"Content\" : \"\"," +
-                "\"FromUserName\" : \"{5}\"," +
-                "\"LocalID\" : {6}," +
-                "\"MediaId\" : \"{7}\"," +
-                "\"ToUserName\" : \"{8}\"," +
-                "\"Type\" : {9}" +
-            "}}," +
-            "\"rr\" : {10}" +
-            "}}";
-            var entity = LoginCore.GetPassTicket(Uin);
-            if (Sid != null && Uin != null)
-            {
-                //((long)(DateTime.Now.ToUniversalTime() - new System.DateTime(1970, 1, 1)).TotalMilliseconds) * 10000
-                msg_json = string.Format(msg_json, DeviceID, Sid, entity.SKey, Uin, DateTime.Now.Millisecond, from, DateTime.Now.Millisecond, msg, to, type, DateTime.Now.Millisecond);
-                byte[] bytes = HttpService.SendPostRequest(BaseUrl + Constant._sendmsgimg_url + "&pass_ticket=" + entity.PassTicket, msg_json, Uin);
-                string send_result = Encoding.UTF8.GetString(bytes);
-                var aa = send_result;
-            }
-            //((Action)delegate()
-            //{
-            //    //存储发送消息
-            //    var b = WxOperateLogDal.AddWxsendmsglog(Uin, from, msg,to,from);
-            //}).BeginInvoke(null, null);
-        }
-        /// <summary>
-        /// 发送图片
-        /// </summary>
-        /// <param name="msg"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="type"></param>
-        public void SendMsgImg(string MediaId, string msg, string from, string to, int type, string Uin, string Sid)
+        public void SendMsgImg(string MediaId, string msg, string from, string to, int type)
         {
             string msg_json = "{{" +
             "\"BaseRequest\":{{" +
@@ -328,7 +286,7 @@ namespace WxBot.Http
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="type"></param>
-        public void SendEmoticon(string EMoticonMd5, string from, string to, int type, string Uin, string Sid)
+        public void SendEmoticon(string EMoticonMd5, string from, string to, int type)
         {
             string msg_json = "{{" +
             "\"BaseRequest\":{{" +

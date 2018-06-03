@@ -65,7 +65,16 @@ namespace WxBot.Http
             }
             catch (Exception ex)
             {
-                MessageBox.Show("SendGetRequest" + ex.Message);
+                
+                if (ex.Message.Contains("协议冲突"))
+                {
+                    return null;
+                }
+                else
+                {
+                    MessageBox.Show("SendGetRequest" + ex.Message);
+                }
+                
                 return null;
             }
             finally

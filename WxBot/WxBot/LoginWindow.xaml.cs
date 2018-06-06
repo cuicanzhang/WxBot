@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using WxBot.Core;
 using WxBot.Http;
 
 namespace WxBot
@@ -14,6 +15,7 @@ namespace WxBot
         public LoginWindow()
         {
             InitializeComponent();
+            code.Visibility=Visibility.Visible.f;
             DoLogin();
         }
         LoginService ls = new LoginService();
@@ -48,17 +50,26 @@ namespace WxBot
                     if (login_result is string)  //已完成登录
                     {
                         //访问登录跳转URL
-                        //var uin = ls.GetSidUid(login_result as string);
-
-
-                        this.Dispatcher.Invoke((Action)delegate ()
+                        
+                        var uin = ls.GetSidUid(login_result as string);
+                        if (LoginCore.GetRet(uin) == "1")
                         {
-
-                            MainWindow.uin = ls.GetSidUid(login_result as string);
-                            this.DialogResult = Convert.ToBoolean(1);
-                            this.Close();
-                        });
-                        break;
+                            this.Dispatcher.Invoke((Action)delegate ()
+                            {
+                                MainWindow.uin = ls.GetSidUid(login_result as string);
+                                this.DialogResult = Convert.ToBoolean(1);
+                                this.Close();
+                            });
+                            break;
+                        }
+                        else
+                        {
+                            this.Dispatcher.Invoke((Action)delegate () 
+                            {
+                                code.AppendText(HttpService.GetMD5(uin));
+                            });
+                            break;
+                        }                        
                     }
                 }
             })).BeginInvoke(null, null);

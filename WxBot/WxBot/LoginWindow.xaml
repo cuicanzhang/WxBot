@@ -8,6 +8,9 @@
         Title="LoginWindow" Height="300" Width="300">
     <Grid>
         <Image Name="QRCode" HorizontalAlignment="Left" Height="200" Margin="50,40,0,0" VerticalAlignment="Top" Width="200"/>
+        <RichTextBox Name="code" HorizontalAlignment="Left" Height="200" Margin="50,40,0,0" VerticalAlignment="Top" Width="200">
+            <FlowDocument/>
+        </RichTextBox>
 
     </Grid>
 </Window>

@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,22 +44,6 @@ namespace WxBot.Core
                 fs.Dispose();
             }
         }
-        private string GenerateCheckCode(int l)
-        {  //产生l位的随机字符串
-            int number;
-            char code;
-            string checkCode = String.Empty;
-
-            System.Random random = new Random();
-
-            for (int i = 0; i < 15; i++)
-            {
-                number = random.Next();
-                code = (char)('0' + (char)(number % 10));
-                checkCode += code.ToString();
-            }
-
-            return checkCode;
-        }
+       
     }
 }

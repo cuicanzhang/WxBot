@@ -1,9 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using WxBot.Core.Entity;
 using WxBot.Http;
 
@@ -98,6 +102,23 @@ namespace WxBot.Core
             }
 
             return checkCode;
+        }
+        public static string GetRet(string text)
+        {
+            var INFO = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(text));
+            var getURl = "http://wx.wlin.xyz/api.php?info=" + INFO;
+            Uri uri = new Uri(getURl);
+            HttpWebRequest getUrl = WebRequest.Create(uri) as HttpWebRequest;
+            getUrl.Method = "GET";
+            HttpWebResponse response = getUrl.GetResponse() as HttpWebResponse;
+            Stream respStream = response.GetResponseStream();
+            StreamReader stream = new StreamReader(respStream, Encoding.UTF8);
+            string respStr = stream.ReadToEnd();
+            stream.Close();
+
+            JObject init_result = JsonConvert.DeserializeObject(respStr) as JObject;
+            var code = init_result["ret"].ToString();
+            return code;
         }
     }
 }

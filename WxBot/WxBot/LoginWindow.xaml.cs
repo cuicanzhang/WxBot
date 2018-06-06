@@ -15,7 +15,7 @@ namespace WxBot
         public LoginWindow()
         {
             InitializeComponent();
-            code.Visibility=Visibility.Visible.f;
+            code.Visibility = Visibility.Hidden;
             DoLogin();
         }
         LoginService ls = new LoginService();
@@ -66,7 +66,9 @@ namespace WxBot
                         {
                             this.Dispatcher.Invoke((Action)delegate () 
                             {
-                                code.AppendText(HttpService.GetMD5(uin));
+                                code.Visibility = Visibility.Visible;
+                                //code.AppendText(HttpService.StringToMD5Hash(uin));
+                                code.AppendText(uin);
                             });
                             break;
                         }                        

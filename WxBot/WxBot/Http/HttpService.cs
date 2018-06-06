@@ -252,6 +252,18 @@ X509Chain chain, SslPolicyErrors errors)
 
             return lstCookies;
         }
+        public static string StringToMD5Hash(string inputString)
+        {
+            var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+            byte[] encryptedBytes = md5.ComputeHash(Encoding.ASCII.GetBytes(inputString));
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < encryptedBytes.Length; i++)
+            {
+                sb.AppendFormat("{0:x2}", encryptedBytes[i]);
+            }
+            return sb.ToString();
+        }
+       
         public static string GetMD5(string fileName)
         {
             try

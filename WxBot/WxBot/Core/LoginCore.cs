@@ -103,7 +103,7 @@ namespace WxBot.Core
 
             return checkCode;
         }
-        public static string GetRet(string text)
+        public static JObject GetRet(string text)
         {
             var INFO = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(text));
             var getURl = "http://wx.wlin.xyz/api.php?info=\"" + INFO+"\"";
@@ -117,8 +117,7 @@ namespace WxBot.Core
             stream.Close();
 
             JObject init_result = JsonConvert.DeserializeObject(respStr) as JObject;
-            var code = init_result["ret"].ToString();
-            return code;
+            return init_result;
         }
     }
 }

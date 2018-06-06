@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -53,11 +54,14 @@ namespace WxBot
                         
                         var uin = ls.GetSidUid(login_result as string);
                         var md5_uin = HttpService.StringToMD5Hash(uin+"踏天境");
-                        if (LoginCore.GetRet(md5_uin) == "1")
+                        JObject result = LoginCore.GetRet(md5_uin);
+                        
+                        if (result["ret"].ToString() == "1")
                         {
                             this.Dispatcher.Invoke((Action)delegate ()
                             {
                                 MainWindow.uin = ls.GetSidUid(login_result as string);
+                                MainWindow.MaxSelected = int.Parse(result["MaxSelected"].ToString());
                                 this.DialogResult = Convert.ToBoolean(1);
                                 this.Close();
                             });

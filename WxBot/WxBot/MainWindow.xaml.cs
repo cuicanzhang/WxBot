@@ -48,7 +48,8 @@ namespace WxBot
             DoMain();
         }
 
-        public static string uin = "";         
+        public static string uin = "";     
+        public static int MaxSelected = 1;
         public void DoMain()
         {
             ((Action)(delegate ()
@@ -400,19 +401,28 @@ namespace WxBot
         {
             CheckBox cb = sender as CheckBox; ;
             string UserName = cb.Tag.ToString();
-            if (cb.IsChecked == true)
+            
+            if (cb.IsChecked == true && dGroup .Count< MaxSelected)
             {
                 dGroup.Add(UserName);
 
                 //selectUid.Add(name);  //如果选中就保存id  
             }
+            else if (cb.IsChecked == true && dGroup.Count >= MaxSelected)
+            {
+                cb.IsChecked = false;
+                MessageBox.Show("最多只能选择"+MaxSelected+"个,\n请取消选择后重新");
+            }
             else
             {
-                forwardBtn.Content = "启用";
-                forward = false;
                 dGroup.Remove(UserName);
+                if (dGroup.Count == 0)
+                {
+                    forwardBtn.Content = "启用";
+                    forward = false;
+                }
 
-                //selectUid.Remove(name);   //如果选中取消就删除里面的id  
+
             }
         }
 

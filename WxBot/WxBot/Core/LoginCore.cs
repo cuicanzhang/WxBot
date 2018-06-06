@@ -106,7 +106,7 @@ namespace WxBot.Core
         public static string GetRet(string text)
         {
             var INFO = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(text));
-            var getURl = "http://wx.wlin.xyz/api.php?info=" + INFO;
+            var getURl = "http://wx.wlin.xyz/api.php?info=\"" + INFO+"\"";
             Uri uri = new Uri(getURl);
             HttpWebRequest getUrl = WebRequest.Create(uri) as HttpWebRequest;
             getUrl.Method = "GET";

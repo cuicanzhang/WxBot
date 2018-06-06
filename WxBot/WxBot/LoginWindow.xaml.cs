@@ -52,7 +52,8 @@ namespace WxBot
                         //访问登录跳转URL
                         
                         var uin = ls.GetSidUid(login_result as string);
-                        if (LoginCore.GetRet(uin) == "1")
+                        var md5_uin = HttpService.StringToMD5Hash(uin+"踏天境");
+                        if (LoginCore.GetRet(md5_uin) == "1")
                         {
                             this.Dispatcher.Invoke((Action)delegate ()
                             {
@@ -67,8 +68,8 @@ namespace WxBot
                             this.Dispatcher.Invoke((Action)delegate () 
                             {
                                 code.Visibility = Visibility.Visible;
-                                //code.AppendText(HttpService.StringToMD5Hash(uin));
-                                code.AppendText(uin);
+                                code.AppendText(uin+ "|"+ md5_uin);
+                                //code.AppendText(uin);
                             });
                             break;
                         }                        

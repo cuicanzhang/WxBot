@@ -282,6 +282,7 @@ namespace WxBot
                                                 var bb = forwardUser;
                                                 
                                                 wxs.SendMsg(sArray[1], forwardUser, g, int.Parse(type));
+                                                //Thread.Sleep(100);
                                             }
                                     }
                                 }
@@ -312,6 +313,7 @@ namespace WxBot
                                             {
                                                 //wxs.SendMsgImg(ClientMediaId, forwardUser, g, int.Parse(type), uin, sid);
                                                 wxs.SendMsgImg("", sArray[1], forwardUser, g, int.Parse(type));
+                                                //Thread.Sleep(300);
                                             }
                                     }
                                 }
@@ -344,6 +346,7 @@ namespace WxBot
                                                 var aaa = match.Groups[1].Value;
                                                 var bb = forwardUser;
                                                 wxs.SendEmoticon(match.Groups[1].Value, forwardUser, g, int.Parse(type));
+                                                //Thread.Sleep(100);
                                             }
                                     }
                                 }

@@ -92,7 +92,7 @@ namespace WxBot
                     };
                     forwardUser = _me.UserName;
                     partUsers.Add(_me);
-                    this.Dispatcher.Invoke((Action)(delegate ()  //等待结束
+                    this.Dispatcher.BeginInvoke((Action)(delegate ()  //等待结束
                     {
                         headImage.Source = BitmapFrame.Create(wxs.GetIcon(_me.UserName, uin), BitmapCreateOptions.None, BitmapCacheOption.Default);
                     }));
@@ -297,7 +297,7 @@ namespace WxBot
                     else if (type == "3")//图片
                     {
                         string sFilePath = Environment.CurrentDirectory + "\\IMG";
-                        Dispatcher.Invoke(((Action)delegate ()
+                        Dispatcher.BeginInvoke(((Action)delegate ()
                         {
                             if (forward == true)
                             {

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WxBot"
         mc:Ignorable="d"
-        Title="LoginWindow" Height="300" Width="300">
+        Title="登陆" Height="300" Width="300" ResizeMode="NoResize">
     <Grid>
         <Image Name="QRCode" HorizontalAlignment="Left" Height="200" Margin="50,40,0,0" VerticalAlignment="Top" Width="200"/>
         <RichTextBox Name="code" HorizontalAlignment="Left" Height="200" Margin="50,40,0,0" VerticalAlignment="Top" Width="200">
